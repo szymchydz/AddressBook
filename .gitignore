@@ -20,6 +20,9 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
+*.cbp
+*.depend
+*.layout
 
 # Windows shortcuts
 *.lnk
