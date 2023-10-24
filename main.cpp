@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <algorithm>
+#include <windows.h>
 
 
 using namespace std;
@@ -199,6 +200,44 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress) {
 
     addNewPersonToTheFile (newPerson);
 
+}
+
+int userRegistration (vector <User> &currentUser, int currentUsersCount)
+{
+    string userName, userPassword;
+
+    cout << "Podaj nazwe uzytkownika: ";
+    userName = readLine();
+    int i = 0;
+
+    while (i < currentUsersCount)
+    {
+        if (currentUser[i].userName == userName)
+        {
+            cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+            userName = readLine();
+            i = 0;
+        }
+        else
+        {
+            i++;
+        }
+    }
+    cout << "Podaj haslo: ";
+    userPassword = readLine();
+
+    User newUser;
+    newUser.userName = userName;
+    newUser.userPassword = userPassword;
+    newUser.id = currentUsersCount + 1;
+
+    currentUser.push_back(newUser);
+    currentUsersCount++;
+
+    cout << "Konto zostalo zalozone";
+    Sleep(1000);
+
+    return currentUsersCount;
 }
 
 void searchPersonByName(vector<Person> &postalAddress) {
@@ -435,7 +474,7 @@ int main() {
 
             switch (choice) {
             case '1':
-                //currentUsersCount = userRegistration (currentUser,currentUsersCount);
+                currentUsersCount = userRegistration (currentUser,currentUsersCount);
                 break;
             case '2':
                 //loggedUserId = userSignIn (currentUser, currentUsersCount);
