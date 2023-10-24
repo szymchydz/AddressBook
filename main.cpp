@@ -411,6 +411,7 @@ int chooseOptionFromUserMenu () {
     cout << "4. Wyswietl wszystkich adresatow" << endl;
     cout << "5. Usun adresata" << endl;
     cout << "6. Edytuj adresata" << endl;
+    cout << "7. Zmien haslo" << endl;
     cout << "9. Wyloguj sie" << endl;
     cout << endl;
     cout << "Twoj wybor: ";
@@ -473,8 +474,12 @@ int main() {
                 case '6':
                     editPersonDataInAddressBook (postalAddress);
                     break;
+                case '7':
+                    //passwordChange (currentUser, currentUsersCount, loggedUserId);
+                    break;
                 case '9':
-                    return(0);
+                    //loggedUserId = 0;
+                    break;
                 }
             }
         }
