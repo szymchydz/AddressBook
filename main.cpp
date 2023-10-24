@@ -14,6 +14,11 @@ struct Person {
     string name = "", surname = "", phoneNumber = "", email = "", address = "";
 };
 
+struct User {
+    int id = 0;
+    string userName,  userPassword;
+};
+
 string readLine() {
 
     string input;
@@ -379,51 +384,103 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress) {
     rewriteVectorToFile(postalAddress);
 }
 
+int chooseOptionFromMainMenu () {
+
+    system ("cls");
+    cout << "   >>> MENU GLOWNE <<< " << endl;
+    cout << "........................" << endl;
+    cout << "1. Rejestracja" << endl;
+    cout << "2. Logowanie" << endl;
+    cout << "9. Zakoncz program" << endl;
+    cout << "........................" << endl;
+    cout << "Twoj wybor: ";
+    char choice;
+    choice = getSymbol();
+
+    return choice;
+}
+
+int chooseOptionFromUserMenu () {
+
+    system("cls");
+    cout << "***** KSIAZKA ADRESOWA *****" << endl;
+    cout << endl;
+    cout << "1. Dodaj adresata" << endl;
+    cout << "2. Wyszukaj adresata po imieniu" << endl;
+    cout << "3. Wyszukaj adresata po nazwisku" << endl;
+    cout << "4. Wyswietl wszystkich adresatow" << endl;
+    cout << "5. Usun adresata" << endl;
+    cout << "6. Edytuj adresata" << endl;
+    cout << "9. Wyloguj sie" << endl;
+    cout << endl;
+    cout << "Twoj wybor: ";
+    char choice = getSymbol();
+
+    return choice;
+}
+
 int main() {
     vector<Person> postalAddress;
+    vector<User> currentUser;
 
-    loadSavedContactsFromAddressBook(postalAddress);
+    int loggedUserId = 0;
+    int currentUsersCount = 0;
+    char choice;
 
     while (true) {
-        system("cls");
-        cout << "***** KSIAZKA ADRESOWA *****" << endl;
-        cout << endl;
-        cout << "1. Dodaj adresata" << endl;
-        cout << "2. Wyszukaj adresata po imieniu" << endl;
-        cout << "3. Wyszukaj adresata po nazwisku" << endl;
-        cout << "4. Wyswietl wszystkich adresatow" << endl;
-        cout << "5. Usun adresata" << endl;
-        cout << "6. Edytuj adresata" << endl;
-        cout << "9. Zakoncz program" << endl;
-        cout << endl;
-        cout << "Twoj wybor: ";
-        char choice = getSymbol();
+        if (loggedUserId == 0) {
 
+            choice = chooseOptionFromMainMenu ();
 
-        switch (choice) {
-        case '1':
-            addNewPersonToAddressBook(postalAddress);
-            break;
-        case '2':
-            searchPersonByName(postalAddress);
-            break;
-        case '3':
-            searchPersonBySurname(postalAddress);
-            break;
-        case '4':
-            displayAllContactsFromAddressBook(postalAddress);
-            break;
-        case '5':
-            removePersonFromAddressBook(postalAddress);
-            break;
-        case '6':
-            editPersonDataInAddressBook (postalAddress);
-            break;
-        case '9':
-            exit(0);
+            switch (choice) {
+            case '1':
+                //currentUsersCount = userRegistration (currentUser,currentUsersCount);
+                break;
+            case '2':
+                //loggedUserId = userSignIn (currentUser, currentUsersCount);
+                break;
+            case '9':
+                exit(0);
+            default :
+                cout << endl << "Nie ma takiej opcji w menu" << endl;
+                system ("pause");
+                break;
+            }
+        } else {
+
+            if (postalAddress.empty() == true) {
+
+                loadSavedContactsFromAddressBook(postalAddress);
+
+                choice = chooseOptionFromUserMenu();
+
+                switch (choice) {
+                case '1':
+                    addNewPersonToAddressBook(postalAddress);
+                    break;
+                case '2':
+                    searchPersonByName(postalAddress);
+                    break;
+                case '3':
+                    searchPersonBySurname(postalAddress);
+                    break;
+                case '4':
+                    displayAllContactsFromAddressBook(postalAddress);
+                    break;
+                case '5':
+                    removePersonFromAddressBook(postalAddress);
+                    break;
+                case '6':
+                    editPersonDataInAddressBook (postalAddress);
+                    break;
+                case '9':
+                    return(0);
+                }
+            }
         }
     }
     return 0;
 }
+
 
 
