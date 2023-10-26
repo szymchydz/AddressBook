@@ -67,6 +67,12 @@ void writePersonToFile(const Person &person, ofstream &file) {
     file << person.address << "|" << endl;
 }
 
+void writeUserToFile(const User &user, ofstream &file) {
+    file << user.id << "|";
+    file << user.userName << "|";
+    file << user.userPassword << "|"<< endl;
+}
+
 void displaySingleContactDetails(const Person& person) {
     cout << "ID: " << person.id << endl;
     cout << person.name << " " << person.surname << endl;
@@ -146,6 +152,49 @@ void loadSavedContactsFromAddressBook(vector<Person> &postalAddress) {
     file.close();
 }
 
+void loadSavedUsersFromUserFile(vector<User> &currentUser) {
+
+    string line{};
+    fstream file;
+
+    file.open("Uzytkownicy.txt", ios::in);
+
+    if (!file.is_open()) {
+        cout << "Plik nie istnieje." << endl;
+        return;
+    }
+
+    User user;
+
+    int userNumber = 1;
+
+    while (getline(file, line)) {
+        istringstream iss(line);
+        string userLineOfData;
+
+        while (getline(iss, userLineOfData, '|')) {
+            switch (userNumber) {
+            case 1:
+                user.id = stoi(userLineOfData);
+                break;
+            case 2:
+                user.userName = userLineOfData;
+                break;
+            case 3:
+                user.userPassword = userLineOfData;
+                break;
+            }
+            userNumber++;
+        }
+
+        currentUser.push_back(user);
+
+        userNumber = 1;
+    }
+
+    file.close();
+}
+
 void rewriteVectorToFile(vector<Person> &postalAddress) {
     ofstream file("Ksiazka adresowa.txt");
 
@@ -169,6 +218,19 @@ void addNewPersonToTheFile(const Person &newPerson) {
     }
 
     writePersonToFile(newPerson, file);
+
+    file.close();
+}
+
+void addNewUserToTheFile(const User &newUser) {
+    ofstream file("Uzytkownicy.txt", ios::app);
+
+    if (!file.is_open()) {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        return;
+    }
+
+    writeUserToFile(newUser, file);
 
     file.close();
 }
@@ -202,40 +264,40 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress) {
 
 }
 
-int userRegistration (vector <User> &currentUser, int currentUsersCount)
-{
-    string userName, userPassword;
-
-    cout << "Podaj nazwe uzytkownika: ";
-    userName = readLine();
-    int i = 0;
-
-    while (i < currentUsersCount)
-    {
-        if (currentUser[i].userName == userName)
-        {
+bool isUserNameTaken(vector<User> &currentUser, string &userName) {
+    for (const User &user : currentUser) {
+        if (user.userName == userName) {
             cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
-            userName = readLine();
-            i = 0;
-        }
-        else
-        {
-            i++;
+            return true;
         }
     }
+    return false;
+}
+
+int userRegistration(vector<User> &currentUser, int currentUsersCount) {
+    string userName, userPassword;
+
+    do {
+        cout << "Podaj nazwe uzytkownika: ";
+        userName = readLine();
+    }
+
+    while (isUserNameTaken(currentUser, userName));
+
     cout << "Podaj haslo: ";
     userPassword = readLine();
 
     User newUser;
     newUser.userName = userName;
     newUser.userPassword = userPassword;
-    newUser.id = currentUsersCount + 1;
+    newUser.id = currentUser.empty() ? 1 : currentUser.back().id + 1;
 
     currentUser.push_back(newUser);
     currentUsersCount++;
 
+    addNewUserToTheFile(newUser);
+
     cout << "Konto zostalo zalozone";
-    Sleep(1000);
 
     return currentUsersCount;
 }
@@ -463,9 +525,13 @@ int main() {
     vector<Person> postalAddress;
     vector<User> currentUser;
 
+    loadSavedUsersFromUserFile(currentUser);
+
     int loggedUserId = 0;
     int currentUsersCount = 0;
     char choice;
+
+
 
     while (true) {
         if (loggedUserId == 0) {
