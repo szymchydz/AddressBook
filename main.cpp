@@ -210,6 +210,20 @@ void rewriteVectorToFile(vector<Person> &postalAddress) {
     file.close();
 }
 
+void rewriteVectorToUserFile(vector<User> &currentUser) {
+    ofstream file("Uzytkownicy.txt");
+
+    if (!file.is_open()) {
+        cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        return;
+    }
+
+    for (const User &user : currentUser) {
+        writeUserToFile(user, file);
+    }
+    file.close();
+}
+
 void addNewPersonToTheFile(const Person &newPerson) {
     ofstream file("Ksiazka adresowa.txt", ios::app);
 
@@ -520,6 +534,24 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress) {
     rewriteVectorToFile(postalAddress);
 }
 
+void passwordChange (vector <User> &currentUser, int currentUsersCount, int loggedUserId) {
+
+    string userNewPassword;
+
+    cout << "Podaj nowe userPassword: ";
+    cin >> userNewPassword;
+
+    for ( User &user : currentUser) {
+        if (user.id == loggedUserId) {
+            user.userPassword = userNewPassword;
+            rewriteVectorToUserFile(currentUser);
+            cout << "Haslo zostalo zmienione.";
+            Sleep(1500);
+            return;
+        }
+    }
+}
+
 int chooseOptionFromMainMenu () {
 
     system ("cls");
@@ -561,7 +593,6 @@ int main() {
     vector<User> currentUser;
 
     loadSavedUsersFromUserFile(currentUser);
-    loadSavedContactsFromAddressBook(postalAddress);
 
     int loggedUserId = 0;
     int currentUsersCount = currentUser.size();
@@ -588,6 +619,7 @@ int main() {
                 break;
             }
         } else {
+            loadSavedContactsFromAddressBook(postalAddress);
 
             choice = chooseOptionFromUserMenu();
 
@@ -611,7 +643,7 @@ int main() {
                 editPersonDataInAddressBook (postalAddress);
                 break;
             case '7':
-                //passwordChange (currentUser, currentUsersCount, loggedUserId);
+                passwordChange (currentUser, currentUsersCount, loggedUserId);
                 break;
             case '9':
                 loggedUserId = 0;
