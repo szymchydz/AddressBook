@@ -12,6 +12,7 @@ using namespace std;
 
 struct Person {
     int id = 0;
+    int userId = 0;
     string name = "", surname = "", phoneNumber = "", email = "", address = "";
 };
 
@@ -302,6 +303,40 @@ int userRegistration(vector<User> &currentUser, int currentUsersCount) {
     return currentUsersCount;
 }
 
+int userSignIn (vector <User> &currentUser, int currentUsersCount) {
+    string userName, userPassword;
+
+    cout << "Podaj nazwe uzytkownika: ";
+    userName = readLine();
+    int i = 0;
+
+    while (i < currentUsersCount) {
+        if (currentUser[i].userName == userName) {
+            for (int attempts = 0; attempts < 3; attempts++) {
+                cout << "Podaj haslo uzytkownika.Pozostalo prob " << 3 - attempts <<": ";
+                userPassword = readLine();
+                if (currentUser[i].userPassword == userPassword) {
+                    cout << "Zalogowales sie.";
+                    Sleep(1000);
+                    return currentUser[i].id;
+                }
+            }
+            cout << "Odczekaj 3 sekundy na odblokowanie." << endl;
+            cout << "3s" << endl;
+            Sleep(1000);
+            cout << "2s" << endl;
+            Sleep(1000);
+            cout << "1s" << endl;
+            Sleep(1000);
+            return 0;
+        }
+        i++;
+    }
+    cout << "Nie ma uzytkownika o takiej nazwie" << endl;
+    Sleep(1500);
+    return 0;
+}
+
 void searchPersonByName(vector<Person> &postalAddress) {
 
     if (postalAddress.empty()) {
@@ -526,14 +561,14 @@ int main() {
     vector<User> currentUser;
 
     loadSavedUsersFromUserFile(currentUser);
+    loadSavedContactsFromAddressBook(postalAddress);
 
     int loggedUserId = 0;
-    int currentUsersCount = 0;
+    int currentUsersCount = currentUser.size();
     char choice;
 
-
-
     while (true) {
+
         if (loggedUserId == 0) {
 
             choice = chooseOptionFromMainMenu ();
@@ -543,7 +578,7 @@ int main() {
                 currentUsersCount = userRegistration (currentUser,currentUsersCount);
                 break;
             case '2':
-                //loggedUserId = userSignIn (currentUser, currentUsersCount);
+                loggedUserId = userSignIn (currentUser, currentUsersCount);
                 break;
             case '9':
                 exit(0);
@@ -554,38 +589,33 @@ int main() {
             }
         } else {
 
-            if (postalAddress.empty() == true) {
+            choice = chooseOptionFromUserMenu();
 
-                loadSavedContactsFromAddressBook(postalAddress);
-
-                choice = chooseOptionFromUserMenu();
-
-                switch (choice) {
-                case '1':
-                    addNewPersonToAddressBook(postalAddress);
-                    break;
-                case '2':
-                    searchPersonByName(postalAddress);
-                    break;
-                case '3':
-                    searchPersonBySurname(postalAddress);
-                    break;
-                case '4':
-                    displayAllContactsFromAddressBook(postalAddress);
-                    break;
-                case '5':
-                    removePersonFromAddressBook(postalAddress);
-                    break;
-                case '6':
-                    editPersonDataInAddressBook (postalAddress);
-                    break;
-                case '7':
-                    //passwordChange (currentUser, currentUsersCount, loggedUserId);
-                    break;
-                case '9':
-                    //loggedUserId = 0;
-                    break;
-                }
+            switch (choice) {
+            case '1':
+                addNewPersonToAddressBook(postalAddress);
+                break;
+            case '2':
+                searchPersonByName(postalAddress);
+                break;
+            case '3':
+                searchPersonBySurname(postalAddress);
+                break;
+            case '4':
+                displayAllContactsFromAddressBook(postalAddress);
+                break;
+            case '5':
+                removePersonFromAddressBook(postalAddress);
+                break;
+            case '6':
+                editPersonDataInAddressBook (postalAddress);
+                break;
+            case '7':
+                //passwordChange (currentUser, currentUsersCount, loggedUserId);
+                break;
+            case '9':
+                loggedUserId = 0;
+                break;
             }
         }
     }
