@@ -1,5 +1,7 @@
-1|Szymon|hhh|
-2|Agata|222|
-3|Zuzia|369|
-4|Waldek|145|
-5|szymon|123|
+1|Szymon|123|
+2|Beata|123|
+3|Waldek|321|
+4|Kama|123|
+5|Marta|123|
+6|Hannia|123|
+7|Katarzyna|123|
