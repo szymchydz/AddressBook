@@ -78,6 +78,67 @@ bool isUserNameTaken(vector<User> &currentUser, string &userName) {
     return false;
 }
 
+void deleteLineFromAddressBook(int currentUserId) {
+    vector <string> linesForDeletion;
+    string line;
+    ifstream file("Ksiazka adresowa.txt", ios::in);
+
+    if (!file.is_open()) {
+        cout << "Nie mozna otworzyc pliku." << endl;
+        return;
+    }
+
+    while (getline(file, line)) {
+        string word;
+        istringstream iss(line);
+        int userIdFromTheFile;
+        int numberOfVerticalSeparators = 0;
+
+        while (getline(iss, word, '|')) {
+            numberOfVerticalSeparators++;
+
+            if (numberOfVerticalSeparators == 2) {
+                userIdFromTheFile = stoi(word);
+
+                if (currentUserId == userIdFromTheFile) {
+                    linesForDeletion.push_back(line);
+                    break;
+                }
+            }
+        }
+    }
+
+    file.close();
+
+    ofstream newFile("Plik Bez Linii.txt");
+
+    file.open("Ksiazka adresowa.txt",ios::in);
+
+    if (!file.is_open() || !newFile.is_open()) {
+        cout << "Nie mozna otworzyc obydwu plikow." << endl;
+        return;
+    }
+
+    while (getline(file, line)) {
+        if (find(linesForDeletion.begin(), linesForDeletion.end(), line) == linesForDeletion.end()) {
+            newFile << line << endl;
+        }
+    }
+
+    newFile.close();
+    file.close();
+
+    if (remove("Ksiazka adresowa.txt") != 0) {
+        cout<< "Nie mozna usunac pliku" << endl;
+        return;
+    }
+
+    if (rename("Plik Bez Linii.txt", "Ksiazka adresowa.txt") != 0) {
+        cout << "Nie mozna zamienic pliku." << endl;
+        return;
+    }
+}
+
 void writePersonToFile(const Person &person, int userId, ofstream &file) {
     file << person.id << '|';
     file << userId << '|';
@@ -85,7 +146,7 @@ void writePersonToFile(const Person &person, int userId, ofstream &file) {
     file << person.surname << '|';
     file << person.phoneNumber << '|';
     file << person.email << '|';
-    file << person.address << '|' << endl;
+    file << person.address << '|';
 }
 
 void writeUserToFile(const User &user, ofstream &file) {
@@ -223,18 +284,27 @@ void loadSavedUsersFromUserFile(vector<User> &currentUser) {
     file.close();
 }
 
-void rewriteVectorToFile(vector<Person> &postalAddress) {
-    ofstream file("Ksiazka adresowa.txt");
+void rewriteVectorToFile(vector<Person> &postalAddress, int currentUserId) {
+    ofstream file;
+    string lineWithPersonData = "";
 
-    if (!file.is_open()) {
+    deleteLineFromAddressBook(currentUserId);
+
+    file.open("Ksiazka adresowa.txt", ios::out | ios::app);
+    if (file.good() == true) {
+        for (Person &person : postalAddress) {
+            writePersonToFile(person, currentUserId, file);
+
+            lineWithPersonData = "";
+            file << lineWithPersonData << endl;
+        }
+
+        file.close();
+        cout << "Dane zostaly zapisane." << endl;
+        Sleep(1500);
+    } else {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
-        return;
     }
-
-    for (const Person &person : postalAddress) {
-        writePersonToFile(person, person.userId, file);
-    }
-    file.close();
 }
 
 void rewriteVectorToUserFile(vector<User> &currentUser) {
@@ -496,7 +566,7 @@ void searchPersonBySurname( vector<Person> &postalAddress, int currentUserId) {
     system("pause");
 }
 
-void removePersonFromAddressBook(vector<Person> &postalAddress) {
+void removePersonFromAddressBook(vector<Person> &postalAddress, int currentUserId) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -531,8 +601,8 @@ void removePersonFromAddressBook(vector<Person> &postalAddress) {
             if (choice == 't') {
                 it = postalAddress.erase(it);
                 cout << "Adresata usunieto" << endl;
-                rewriteVectorToFile(postalAddress);
-                system("pause");
+                Sleep(1500);
+                rewriteVectorToFile(postalAddress, currentUserId);
 
 
             } else {
@@ -551,7 +621,7 @@ void removePersonFromAddressBook(vector<Person> &postalAddress) {
     }
 }
 
-void editPersonDataInAddressBook (vector <Person> &postalAddress) {
+void editPersonDataInAddressBook (vector <Person> &postalAddress, int currentUserId) {
     int idOfPersonToEdit;
     char choice;
     bool found = false;
@@ -620,7 +690,7 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress) {
         cout << "Brak adresata o tym ID w ksiazce adresowej" << endl;
         system("pause");
     }
-    rewriteVectorToFile(postalAddress);
+    rewriteVectorToFile(postalAddress, currentUserId);
 }
 
 char chooseOptionFromMainMenu() {
@@ -714,10 +784,10 @@ int main() {
                     displayAllContactsFromAddressBook(postalAddress, loggedUserId);
                     break;
                 case '5':
-                    removePersonFromAddressBook(postalAddress);
+                    removePersonFromAddressBook(postalAddress, loggedUserId);
                     break;
                 case '6':
-                    editPersonDataInAddressBook(postalAddress);
+                    editPersonDataInAddressBook(postalAddress, loggedUserId);
                     break;
                 case '7':
                     userPasswordChange(currentUser, currentUsersCount, loggedUserId);
