@@ -78,10 +78,6 @@ bool isUserNameTaken(vector<User> &currentUser, string &userName) {
     return false;
 }
 
-bool isNumber(const string &s) {
-    return !s.empty() && all_of(s.begin(), s.end(), ::isdigit);
-}
-
 void writePersonToFile(const Person &person, int userId, ofstream &file) {
     file << person.id << '|';
     file << userId << '|';
