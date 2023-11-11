@@ -10,15 +10,15 @@
 
 using namespace std;
 
+struct User {
+    int id = 0;
+    string userName,  userPassword;
+};
+
 struct Person {
     int id = 0;
     int userId = 0;
     string name = "", surname = "", phoneNumber = "", email = "", address = "";
-};
-
-struct User {
-    int id = 0;
-    string userName,  userPassword;
 };
 
 string readLine() {
@@ -83,25 +83,26 @@ bool isNumber(const string &s) {
 }
 
 void writePersonToFile(const Person &person, int userId, ofstream &file) {
-    file << person.id << "|";
-    file << userId << "|";
-    file << person.name << "|";
-    file << person.surname << "|";
-    file << person.phoneNumber << "|";
-    file << person.email << "|";
-    file << person.address << "|" << endl;
+    file << person.id << '|';
+    file << userId << '|';
+    file << person.name << '|';
+    file << person.surname << '|';
+    file << person.phoneNumber << '|';
+    file << person.email << '|';
+    file << person.address << '|' << endl;
 }
 
 void writeUserToFile(const User &user, ofstream &file) {
-    file << user.id << "|";
-    file << user.userName << "|";
-    file << user.userPassword << "|"<< endl;
+    file << user.id << '|';
+    file << user.userName << '|';
+    file << user.userPassword << '|'<< endl;
 }
 
 void displaySingleContactDetails(const Person& person, int currentUserId) {
-    cout << "ID: " << person.id << endl;
-    cout << "User ID " << person.userId << endl;
-    cout << person.name << " " << person.surname << endl;
+    cout << "ID Adresata: " << person.id << endl;
+    cout << "ID Uzytkownika: " << person.userId << endl;
+    cout << "Imie: " << person.name << endl;
+    cout << "Nazwisko: " << person.surname << endl;
     cout << "Telefon: " << person.phoneNumber << endl;
     cout << "Email: " << person.email << endl;
     cout << "Adres: " << person.address << endl;
@@ -110,7 +111,7 @@ void displaySingleContactDetails(const Person& person, int currentUserId) {
 
 void showContactsAddressData(vector <Person> &postalAddress, int currentUserId) {
     for (Person &person : postalAddress) {
-        if (person.userId == currentUserId) {
+        if (currentUserId == person.userId) {
             displaySingleContactDetails(person, currentUserId);
         }
     }
@@ -139,45 +140,45 @@ void loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int current
         return;
     }
 
+    postalAddress.clear();
+
     while (getline(file, line)) {
         istringstream iss(line);
         string personLineOfData;
-        int userId;
         int personNumber = 1;
 
-        Person currentPerson;
+        Person person;
 
         while (getline(iss, personLineOfData, '|')) {
-            if (isNumber(personLineOfData)) {
-                switch (personNumber) {
-                case 1:
-                    currentPerson.id = stoi(personLineOfData);
-                    break;
-                case 2:
-                    userId = stoi(personLineOfData);
-                    break;
-                case 3:
-                    currentPerson.name = personLineOfData;
-                    break;
-                case 4:
-                    currentPerson.surname = personLineOfData;
-                    break;
-                case 5:
-                    currentPerson.phoneNumber = personLineOfData;
-                    break;
-                case 6:
-                    currentPerson.email = personLineOfData;
-                    break;
-                case 7:
-                    currentPerson.address = personLineOfData;
-                    break;
-                }
+            switch (personNumber) {
+            case 1:
+                person.id = stoi(personLineOfData);
+                break;
+            case 2:
+                person.userId = stoi(personLineOfData);
+                break;
+            case 3:
+                person.name = personLineOfData;
+                break;
+            case 4:
+                person.surname = personLineOfData;
+                break;
+            case 5:
+                person.phoneNumber = personLineOfData;
+                break;
+            case 6:
+                person.email = personLineOfData;
+                break;
+            case 7:
+                person.address = personLineOfData;
+                break;
             }
             personNumber++;
         }
 
-        if (userId == currentUserId) {
-            postalAddress.push_back(currentPerson);
+
+        if (person.userId == currentUserId) {
+            postalAddress.push_back(person);
         }
     }
 
@@ -357,6 +358,7 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress, int currentUserId)
 }
 
 int userRegistration(vector<User> &currentUser, int currentUsersCount) {
+
     string userName, userPassword;
 
     do {
@@ -444,12 +446,12 @@ void userPasswordChange(vector<User>& currentUser, int currentUsersCount, int lo
 }
 
 void searchPersonByName(vector<Person> &postalAddress, int currentUserId) {
-
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
         system("pause");
         return;
     }
+
     system("cls");
     string nameToSearch;
     cout << "Wpisz imie adresata: ";
@@ -457,18 +459,18 @@ void searchPersonByName(vector<Person> &postalAddress, int currentUserId) {
 
     bool found = false;
 
-    for (Person &person : postalAddress) {
+    for (const Person &person : postalAddress) {
         if (person.userId == currentUserId && person.name == nameToSearch) {
             displaySingleContactDetails(person, currentUserId);
             found = true;
-            system("pause");
         }
     }
 
     if (!found) {
         cout << "Brak adresata o tym imieniu w ksiazce adresowej." << endl;
-        system("pause");
     }
+
+    system("pause");
 }
 
 void searchPersonBySurname( vector<Person> &postalAddress, int currentUserId) {
@@ -485,18 +487,17 @@ void searchPersonBySurname( vector<Person> &postalAddress, int currentUserId) {
     surnameToSearch = readLine();
     bool found = false;
 
-    for (Person &person : postalAddress) {
+    for (const Person &person : postalAddress) {
         if (person.userId == currentUserId && person.surname == surnameToSearch) {
             displaySingleContactDetails(person, currentUserId);
             found = true;
-            system("pause");
         }
     }
 
     if (!found) {
         cout << "Brak adresata o tym nazwisku w ksiazce adresowej." << endl;
-        system("pause");
     }
+    system("pause");
 }
 
 void removePersonFromAddressBook(vector<Person> &postalAddress) {
@@ -665,9 +666,10 @@ int main() {
     vector<Person> postalAddress;
     vector<User> currentUser;
 
+    int loggedUserId = 0;
+
     loadSavedUsersFromUserFile(currentUser);
 
-    int loggedUserId = 0;
     int currentUsersCount = currentUser.size();
     char choice;
 
@@ -733,5 +735,4 @@ int main() {
     }
     return 0;
 }
-
 
