@@ -110,7 +110,7 @@ void deleteLineFromAddressBook(int currentUserId) {
 
     file.close();
 
-    ofstream newFile("Plik Bez Linii.txt");
+    ofstream newFile("Adresaci_tymczasowy.txt");
 
     file.open("Ksiazka adresowa.txt",ios::in);
 
@@ -133,7 +133,7 @@ void deleteLineFromAddressBook(int currentUserId) {
         return;
     }
 
-    if (rename("Plik Bez Linii.txt", "Ksiazka adresowa.txt") != 0) {
+    if (rename("Adresaci_tymczasowy.txt", "Ksiazka adresowa.txt") != 0) {
         cout << "Nie mozna zamienic pliku." << endl;
         return;
     }
