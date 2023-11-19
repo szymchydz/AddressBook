@@ -7,6 +7,9 @@ ehthumbs_vista.db
 
 # Dump file
 *.stackdump
+Uzytkownicy.txt
+Ksiazka adresowa.txt
+*.txt
 
 # Folder config file
 [Dd]esktop.ini
@@ -1059,5 +1062,3 @@ I have some suggestions to make this even better!
 *.bin
 
 #other
-Uzytkownicy.txt
-Ksiazka adresowa.txt
