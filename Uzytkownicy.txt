@@ -1,8 +1,0 @@
-1|Szymon|123|
-2|Beata|123|
-3|Waldek|321|
-4|Kama|123|
-5|Marta|123|
-6|Hannia|123|
-7|Katarzyna|123|
-8|Sylwia|357|

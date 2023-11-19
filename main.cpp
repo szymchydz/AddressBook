@@ -146,7 +146,7 @@ void writePersonToFile(const Person &person, int userId, ofstream &file) {
     file << person.surname << '|';
     file << person.phoneNumber << '|';
     file << person.email << '|';
-    file << person.address << '|';
+    file << person.address << '|' << endl;
 }
 
 void writeUserToFile(const User &user, ofstream &file) {
@@ -473,7 +473,6 @@ int userSignIn (vector <User> &currentUser, int currentUserId) {
                 userPassword = readLine();
                 if (currentUser[i].userPassword == userPassword) {
                     cout << "Zalogowales sie.";
-                    Sleep(1000);
                     return currentUser[i].id;
                 }
             }
@@ -489,7 +488,7 @@ int userSignIn (vector <User> &currentUser, int currentUserId) {
         i++;
     }
     cout << "Nie ma uzytkownika o takiej nazwie" << endl;
-    Sleep(1500);
+    system("pause");
     return 0;
 
 }
@@ -505,7 +504,7 @@ void userPasswordChange(vector<User>& currentUser, int currentUsersCount, int lo
             user.userPassword = userNewPassword;
             rewriteVectorToUserFile(currentUser);
             cout << "Haslo zostalo zmienione." << endl;
-            Sleep(1500);
+            system("pause");
             return;
         }
     }
@@ -751,7 +750,7 @@ int main() {
                 loggedUserId = userSignIn(currentUser, currentUsersCount);
                 if (loggedUserId == 0) {
                     cout << "Bledne logowanie." << endl;
-                    Sleep(1500);
+                    system("pause");
                 }
                 break;
             case '9':
