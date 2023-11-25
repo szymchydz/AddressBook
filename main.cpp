@@ -193,7 +193,8 @@ void loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int current
     file.open("Ksiazka adresowa.txt", ios::in);
 
     if (!file.is_open()) {
-        cout << "Plik nie istnieje." << endl;
+        cout << "Ksiazka adresowa jest pusta." << endl;
+        system("pause");
         return;
     }
 
@@ -423,7 +424,7 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress, int currentUserId)
 
 }
 
-int userRegistration(vector<User> &currentUser, int currentUsersCount) {
+void userRegistration(vector<User> &currentUser) {
 
     string userName, userPassword;
 
@@ -443,57 +444,58 @@ int userRegistration(vector<User> &currentUser, int currentUsersCount) {
     newUser.id = currentUser.empty() ? 1 : currentUser.back().id + 1;
 
     currentUser.push_back(newUser);
-    currentUsersCount++;
 
     addNewUserToTheFile(newUser);
 
-    cout << "Konto zostalo zalozone";
+    cout << "Konto zostalo zalozone" << endl;
+    system("pause");
 
-    return currentUsersCount;
 }
 
-int userSignIn (vector <User> &currentUser, int currentUserId) {
+int userSignIn (vector <User> &currentUser) {
     string userName, userPassword;
+
 
     ifstream file("Uzytkownicy.txt");
 
     if (!file.is_open()) {
-        cout << "Plik nie istnieje." << endl;
+        cout << "Plik nie istnieje: Uzytkownicy.txt" << endl;
+        system("pause");
         return 0;
     }
 
     cout << "Podaj nazwe uzytkownika: ";
     userName = readLine();
-    int i = 0;
+    unsigned int i = 0;
 
-    while (i < currentUserId) {
+    while (i < currentUser.size()) {
         if (currentUser[i].userName == userName) {
             for (int attempts = 0; attempts < 3; attempts++) {
                 cout << "Podaj haslo uzytkownika.Pozostalo prob " << 3 - attempts <<": ";
                 userPassword = readLine();
                 if (currentUser[i].userPassword == userPassword) {
-                    cout << "Zalogowales sie.";
+                    cout << "Zalogowales sie." << endl;
+                    system("pause");
                     return currentUser[i].id;
                 }
             }
+            cout << "Bledne logowanie." << endl;
             cout << "Odczekaj 3 sekundy na odblokowanie." << endl;
-            cout << "3s" << endl;
-            Sleep(1000);
-            cout << "2s" << endl;
-            Sleep(1000);
-            cout << "1s" << endl;
-            Sleep(1000);
+            for (int countdown = 3; countdown > 0; countdown--) {
+                cout << countdown << "s" << endl;
+                Sleep(1000);
+            }
             return 0;
         }
         i++;
     }
     cout << "Nie ma uzytkownika o takiej nazwie" << endl;
     system("pause");
-    return 0;
 
+    return 0;
 }
 
-void userPasswordChange(vector<User>& currentUser, int currentUsersCount, int loggedUserId) {
+void userPasswordChange(vector<User>& currentUser, int loggedUserId) {
     string userNewPassword;
 
     cout << "Podaj nowe haslo: ";
@@ -503,7 +505,7 @@ void userPasswordChange(vector<User>& currentUser, int currentUsersCount, int lo
         if (user.id == loggedUserId) {
             user.userPassword = userNewPassword;
             rewriteVectorToUserFile(currentUser);
-            cout << "Haslo zostalo zmienione." << endl;
+            cout <<"Haslo zostalo zmienione." << endl;
             system("pause");
             return;
         }
@@ -735,7 +737,6 @@ int main() {
 
     loadSavedUsersFromUserFile(currentUser);
 
-    int currentUsersCount = currentUser.size();
     char choice;
 
     while (true) {
@@ -744,12 +745,11 @@ int main() {
 
             switch (choice) {
             case '1':
-                currentUsersCount = userRegistration(currentUser, currentUsersCount);
+                userRegistration(currentUser);
                 break;
             case '2':
-                loggedUserId = userSignIn(currentUser, currentUsersCount);
+                loggedUserId = userSignIn(currentUser);
                 if (loggedUserId == 0) {
-                    cout << "Bledne logowanie." << endl;
                     system("pause");
                 }
                 break;
@@ -789,7 +789,7 @@ int main() {
                     editPersonDataInAddressBook(postalAddress, loggedUserId);
                     break;
                 case '7':
-                    userPasswordChange(currentUser, currentUsersCount, loggedUserId);
+                    userPasswordChange(currentUser, loggedUserId);
                     break;
                 case '9':
                     loggedUserId = 0;
