@@ -71,7 +71,7 @@ bool doesUserExist(vector<User>& currentUser, int userId) {
 bool isUserNameTaken(vector<User> &currentUser, string &userName) {
     for (const User &user : currentUser) {
         if (user.userName == userName) {
-            cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: ";
+            cout << "Taki uzytkownik istnieje. Wpisz inna nazwe uzytkownika: " << endl;
             return true;
         }
     }
@@ -121,7 +121,7 @@ void deleteLineFromAddressBook(int currentUserId) {
 
     while (getline(file, line)) {
         if (find(linesForDeletion.begin(), linesForDeletion.end(), line) == linesForDeletion.end()) {
-            newFile << line << endl;
+            newFile << line /*<< endl*/;
         }
     }
 
@@ -139,9 +139,9 @@ void deleteLineFromAddressBook(int currentUserId) {
     }
 }
 
-void writePersonToFile(const Person &person, int userId, ofstream &file) {
+void writePersonToFile(const Person &person, ofstream &file) {
     file << person.id << '|';
-    file << userId << '|';
+    file << person.userId << '|';
     file << person.name << '|';
     file << person.surname << '|';
     file << person.phoneNumber << '|';
@@ -155,7 +155,7 @@ void writeUserToFile(const User &user, ofstream &file) {
     file << user.userPassword << '|'<< endl;
 }
 
-void displaySingleContactDetails(const Person& person, int currentUserId) {
+void displaySingleContactDetails(const Person& person) {
     cout << "ID Adresata: " << person.id << endl;
     cout << "ID Uzytkownika: " << person.userId << endl;
     cout << "Imie: " << person.name << endl;
@@ -166,27 +166,27 @@ void displaySingleContactDetails(const Person& person, int currentUserId) {
     cout << endl;
 }
 
-void showContactsAddressData(vector <Person> &postalAddress, int currentUserId) {
+void showContactsAddressData(vector <Person> &postalAddress) {
+
     for (Person &person : postalAddress) {
-        if (currentUserId == person.userId) {
-            displaySingleContactDetails(person, currentUserId);
+            displaySingleContactDetails(person);
         }
     }
-}
 
-void displayAllContactsFromAddressBook(vector<Person> &postalAddress,int currentUserId) {
+void displayAllContactsFromAddressBook(vector<Person> &postalAddress) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
         system("pause");
-    } else {
+    } else{
         system("cls");
-        showContactsAddressData(postalAddress, currentUserId);
+        showContactsAddressData(postalAddress);
         system("pause");
     }
 }
 
-void loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int currentUserId) {
+int loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int currentUserId) {
+
     string line{};
     fstream file;
 
@@ -195,10 +195,8 @@ void loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int current
     if (!file.is_open()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
         system("pause");
-        return;
+        return 0;
     }
-
-    postalAddress.clear();
 
     while (getline(file, line)) {
         istringstream iss(line);
@@ -234,13 +232,14 @@ void loadSavedContactsFromAddressBook(vector<Person> &postalAddress, int current
             personNumber++;
         }
 
-
         if (person.userId == currentUserId) {
             postalAddress.push_back(person);
         }
     }
 
     file.close();
+
+    return postalAddress.back().id;
 }
 
 void loadSavedUsersFromUserFile(vector<User> &currentUser) {
@@ -294,7 +293,7 @@ void rewriteVectorToFile(vector<Person> &postalAddress, int currentUserId) {
     file.open("Ksiazka adresowa.txt", ios::out | ios::app);
     if (file.good() == true) {
         for (Person &person : postalAddress) {
-            writePersonToFile(person, currentUserId, file);
+            writePersonToFile(person, file);
 
             lineWithPersonData = "";
             file << lineWithPersonData << endl;
@@ -302,9 +301,10 @@ void rewriteVectorToFile(vector<Person> &postalAddress, int currentUserId) {
 
         file.close();
         cout << "Dane zostaly zapisane." << endl;
-        Sleep(1500);
+        system ("pause");
     } else {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system ("pause");
     }
 }
 
@@ -313,6 +313,7 @@ void rewriteVectorToUserFile(vector<User> &currentUser) {
 
     if (!file.is_open()) {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system ("pause");
         return;
     }
 
@@ -327,58 +328,13 @@ void addNewPersonToTheFile(const Person& newPerson) {
 
     if (!file.is_open()) {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system ("pause");
         return;
     }
 
-    writePersonToFile(newPerson, newPerson.userId, file);
+    writePersonToFile(newPerson, file);
 
     file.close();
-}
-
-int findNextIdNumberOfPerson() {
-    string line;
-    string word;
-    int numberOfVerticalLines = 0;
-    int charactersInWord = 0;
-    int beginningOfLine = 0;
-    int biggestIdNumber = 0;
-    int currentIdNumber = 0;
-    int nextIdNumber = 0;
-
-    fstream file;
-
-    file.open("Ksiazka Adresowa.txt",ios::in);
-
-    if (file.is_open()) {
-        while (getline(file, line)) {
-            charactersInWord = 0;
-            beginningOfLine = 0;
-            numberOfVerticalLines = 0;
-
-            for (string::size_type i = 0; i < line.size(); i++) {
-                charactersInWord = i - beginningOfLine;
-
-                if (line[i] == '|') {
-                    numberOfVerticalLines++;
-                    word = line.substr(beginningOfLine, charactersInWord);
-                    currentIdNumber = atoi(word.c_str());
-
-                    if (numberOfVerticalLines == 1) {
-                        if (currentIdNumber > biggestIdNumber) {
-                            biggestIdNumber = currentIdNumber;
-                        }
-                    }
-
-                    beginningOfLine = i + 1;
-                }
-            }
-        }
-
-    }
-    file.close();
-
-    nextIdNumber = biggestIdNumber + 1;
-    return nextIdNumber;
 }
 
 void addNewUserToTheFile(const User &newUser) {
@@ -386,6 +342,7 @@ void addNewUserToTheFile(const User &newUser) {
 
     if (!file.is_open()) {
         cout << "Nie udalo sie otworzyc pliku i zapisac do niego danych." << endl;
+        system ("pause");
         return;
     }
 
@@ -394,7 +351,7 @@ void addNewUserToTheFile(const User &newUser) {
     file.close();
 }
 
-void addNewPersonToAddressBook(vector<Person> &postalAddress, int currentUserId) {
+void addNewPersonToAddressBook(vector<Person> &postalAddress, int currentUserId, int lastPersonId) {
 
     string name, surname, phoneNumber, email, address;
 
@@ -410,7 +367,7 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress, int currentUserId)
     address = readLine();
 
     Person newPerson;
-    newPerson.id = findNextIdNumberOfPerson();
+    newPerson.id = lastPersonId + 1;
     newPerson.userId = currentUserId;
     newPerson.name = name;
     newPerson.surname = surname;
@@ -512,7 +469,7 @@ void userPasswordChange(vector<User>& currentUser, int loggedUserId) {
     }
 }
 
-void searchPersonByName(vector<Person> &postalAddress, int currentUserId) {
+void searchPersonByName(vector<Person> &postalAddress) {
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
         system("pause");
@@ -526,9 +483,10 @@ void searchPersonByName(vector<Person> &postalAddress, int currentUserId) {
 
     bool found = false;
 
+    system("cls");
     for (const Person &person : postalAddress) {
-        if (person.userId == currentUserId && person.name == nameToSearch) {
-            displaySingleContactDetails(person, currentUserId);
+        if (person.name == nameToSearch) {
+            displaySingleContactDetails(person);
             found = true;
         }
     }
@@ -540,7 +498,7 @@ void searchPersonByName(vector<Person> &postalAddress, int currentUserId) {
     system("pause");
 }
 
-void searchPersonBySurname( vector<Person> &postalAddress, int currentUserId) {
+void searchPersonBySurname( vector<Person> &postalAddress) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -555,8 +513,8 @@ void searchPersonBySurname( vector<Person> &postalAddress, int currentUserId) {
     bool found = false;
 
     for (const Person &person : postalAddress) {
-        if (person.userId == currentUserId && person.surname == surnameToSearch) {
-            displaySingleContactDetails(person, currentUserId);
+        if (person.surname == surnameToSearch) {
+            displaySingleContactDetails(person);
             found = true;
         }
     }
@@ -750,7 +708,6 @@ int main() {
             case '2':
                 loggedUserId = userSignIn(currentUser);
                 if (loggedUserId == 0) {
-                    system("pause");
                 }
                 break;
             case '9':
@@ -761,26 +718,28 @@ int main() {
                 break;
             }
         } else {
+
             if (!doesUserExist(currentUser, loggedUserId)) {
                 cout << "Uzytkownik o podanym ID nie istnieje." << endl;
                 loggedUserId = 0;
             } else {
-                loadSavedContactsFromAddressBook(postalAddress, loggedUserId);
+
+                int lastPersonId = loadSavedContactsFromAddressBook(postalAddress, loggedUserId);
 
                 choice = chooseOptionFromUserMenu();
 
                 switch (choice) {
                 case '1':
-                    addNewPersonToAddressBook(postalAddress, loggedUserId);
+                    addNewPersonToAddressBook(postalAddress, loggedUserId, lastPersonId);
                     break;
                 case '2':
-                    searchPersonByName(postalAddress, loggedUserId);
+                    searchPersonByName(postalAddress);
                     break;
                 case '3':
-                    searchPersonBySurname(postalAddress, loggedUserId);
+                    searchPersonBySurname(postalAddress);
                     break;
                 case '4':
-                    displayAllContactsFromAddressBook(postalAddress, loggedUserId);
+                    displayAllContactsFromAddressBook(postalAddress);
                     break;
                 case '5':
                     removePersonFromAddressBook(postalAddress, loggedUserId);
