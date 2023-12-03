@@ -83,7 +83,7 @@ bool shouldRemovePerson(const Person &person, int idToRemove, int loggedUserId) 
     return person.id == idToRemove && person.userId == loggedUserId;
 }
 
-void deleteLineFromAddressBook(int loggedUserId) {
+void deleteLineFromAddressBook(int loggedUserId) { //fukcja usuwa wszytskich adresatów wybranego usera - do poprawy)
     vector <string> linesForDeletion;
     string line;
     ifstream file("Ksiazka adresowa.txt", ios::in);
@@ -558,7 +558,7 @@ void removePersonFromAddressBook(vector<Person> &postalAddress, int loggedUserId
                 cout << "Adresata usunieto" << endl;
                 Sleep(1500);
                 deleteLineFromAddressBook(loggedUserId);
-                //rewriteVectorToFile(postalAddress);
+                rewriteVectorToFile(postalAddress);
 
             } else {
                 cout << "Bledne potwierdzenie. Nie usunieto adresata" << endl;
