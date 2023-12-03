@@ -79,7 +79,11 @@ bool isUserNameTaken(vector<User> &currentUser, string &userName) {
     return false;
 }
 
-void deleteLineFromAddressBook(int currentUserId) {
+bool shouldRemovePerson(const Person &person, int idToRemove, int loggedUserId) {
+    return person.id == idToRemove && person.userId == loggedUserId;
+}
+
+void deleteLineFromAddressBook(int loggedUserId) {
     vector <string> linesForDeletion;
     string line;
     ifstream file("Ksiazka adresowa.txt", ios::in);
@@ -101,7 +105,7 @@ void deleteLineFromAddressBook(int currentUserId) {
             if (numberOfVerticalSeparators == 2) {
                 userIdFromTheFile = stoi(word);
 
-                if (currentUserId == userIdFromTheFile) {
+                if (loggedUserId == userIdFromTheFile) {
                     linesForDeletion.push_back(line);
                     break;
                 }
@@ -122,7 +126,7 @@ void deleteLineFromAddressBook(int currentUserId) {
 
     while (getline(file, line)) {
         if (find(linesForDeletion.begin(), linesForDeletion.end(), line) == linesForDeletion.end()) {
-            newFile << line;
+            newFile << line << endl;
         }
     }
 
@@ -521,7 +525,7 @@ void searchPersonBySurname( vector<Person> &postalAddress, int loggedUserId) {
     system("pause");
 }
 
-void removePersonFromAddressBook(vector<Person> &postalAddress/*, int currentUserId*/) {
+void removePersonFromAddressBook(vector<Person> &postalAddress, int loggedUserId) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -540,7 +544,8 @@ void removePersonFromAddressBook(vector<Person> &postalAddress/*, int currentUse
     auto it = postalAddress.begin();
 
     while (it != postalAddress.end()) {
-        if (idOfPersonToRemove == it->id) {
+        while (it != postalAddress.end()) {
+        if (shouldRemovePerson(*it, idOfPersonToRemove, loggedUserId)) {
             found = true;
 
             cout << "Usuwasz Osobe:" << endl;
@@ -552,7 +557,8 @@ void removePersonFromAddressBook(vector<Person> &postalAddress/*, int currentUse
                 it = postalAddress.erase(it);
                 cout << "Adresata usunieto" << endl;
                 Sleep(1500);
-                rewriteVectorToFile(postalAddress);
+                deleteLineFromAddressBook(loggedUserId);
+                //rewriteVectorToFile(postalAddress);
 
             } else {
                 cout << "Bledne potwierdzenie. Nie usunieto adresata" << endl;
@@ -569,8 +575,9 @@ void removePersonFromAddressBook(vector<Person> &postalAddress/*, int currentUse
         system("pause");
     }
 }
+}
 
-void editPersonDataInAddressBook (vector <Person> &postalAddress/*, int currentUserId*/) {
+void editPersonDataInAddressBook (vector <Person> &postalAddress, int loggedUserId) {
     int idOfPersonToEdit;
     char choice;
     bool found = false;
@@ -593,7 +600,7 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress/*, int currentU
     system("cls");
 
     for (Person &person : postalAddress) {
-        if (person.id == idOfPersonToEdit) {
+        if (person.id == idOfPersonToEdit && person.userId == loggedUserId) {
             found = true;
 
             cout << "Dane do edycji" << endl;
@@ -639,7 +646,9 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress/*, int currentU
         cout << "Brak adresata o tym ID w ksiazce adresowej" << endl;
         system("pause");
     }
-    rewriteVectorToFile(postalAddress/*, currentUserId*/);
+
+    rewriteVectorToFile(postalAddress);
+
 }
 
 char chooseOptionFromMainMenu() {
@@ -734,10 +743,10 @@ int main() {
                     displayAllContactsFromAddressBook(postalAddress, loggedUserId);
                     break;
                 case '5':
-                    removePersonFromAddressBook(postalAddress/*, loggedUserId*/);
+                    removePersonFromAddressBook(postalAddress, loggedUserId);
                     break;
                 case '6':
-                    editPersonDataInAddressBook(postalAddress/*, loggedUserId*/);
+                    editPersonDataInAddressBook(postalAddress, loggedUserId);
                     break;
                 case '7':
                     userPasswordChange(currentUser, loggedUserId);
