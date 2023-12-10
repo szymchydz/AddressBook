@@ -83,8 +83,49 @@ bool shouldRemovePerson(const Person &person, int idToRemove, int loggedUserId) 
     return person.id == idToRemove && person.userId == loggedUserId;
 }
 
+void handleFileSwap (string oldFileName, string tempFileName) {
+
+    if (remove("Ksiazka adresowa.txt") != 0) {
+        cout<< "Nie mozna usunac pliku" << endl;
+        return;
+    }
+
+    if (rename("Adresaci_tymczasowy.txt", "Ksiazka adresowa.txt") != 0) {
+        cout << "Nie mozna zamienic pliku." << endl;
+        return;
+    }
+
+}
+
 void deleteLineFromAddressBook(int loggedUserId) {
-    vector <string> linesForDeletion;
+
+    //int lastContactId = 0;
+    string line, field, oldFileName = "Ksiazka adresowa.txt", tempFileName = "Adresaci_tymczasowy.txt";
+    ifstream file(oldFileName);
+    ofstream tempFile(tempFileName);
+
+    while (getline(file, line)) {
+
+        istringstream iss(line);
+
+        getline (iss, field, '|');
+
+        if (stoi(field) != loggedUserId) {
+            tempFile << line << endl;
+            //lastContactId = stoi(field);
+        }
+
+    }
+
+    file.close();
+    tempFile.close();
+
+    handleFileSwap(oldFileName, tempFileName);
+
+
+
+
+    /*vector <string> linesForDeletion;
     string line;
     ifstream file("Ksiazka adresowa.txt", ios::in);
 
@@ -141,7 +182,7 @@ void deleteLineFromAddressBook(int loggedUserId) {
     if (rename("Adresaci_tymczasowy.txt", "Ksiazka adresowa.txt") != 0) {
         cout << "Nie mozna zamienic pliku." << endl;
         return;
-    }
+    }*/
 }
 
 void writePersonToFile(const Person &person, ofstream &file) {
@@ -468,7 +509,7 @@ void userPasswordChange(vector<User>& currentUser, int loggedUserId) {
     }
 }
 
-void searchPersonByName(vector<Person> &postalAddress/*, int loggedUserId*/) {
+void searchPersonByName(vector<Person> &postalAddress, int loggedUserId) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -485,7 +526,7 @@ void searchPersonByName(vector<Person> &postalAddress/*, int loggedUserId*/) {
 
     system("cls");
     for (const Person &person : postalAddress) {
-        if (person.name == nameToSearch /*&& person.userId == loggedUserId*/) {
+        if (person.name == nameToSearch && person.userId == loggedUserId) {
             displaySingleContactDetails(person);
             found = true;
         }
@@ -735,7 +776,7 @@ int main() {
                     addNewPersonToAddressBook(postalAddress, loggedUserId, lastPersonId);
                     break;
                 case '2':
-                    searchPersonByName(postalAddress/*, loggedUserId*/);
+                    searchPersonByName(postalAddress, loggedUserId);
                     break;
                 case '3':
                     searchPersonBySurname(postalAddress, loggedUserId);
