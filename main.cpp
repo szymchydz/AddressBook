@@ -99,7 +99,6 @@ void handleFileSwap (string oldFileName, string tempFileName) {
 
 void deleteLineFromAddressBook(int loggedUserId) {
 
-    //int lastContactId = 0;
     string line, field, oldFileName = "Ksiazka adresowa.txt", tempFileName = "Adresaci_tymczasowy.txt";
     ifstream file(oldFileName);
     ofstream tempFile(tempFileName);
@@ -112,7 +111,6 @@ void deleteLineFromAddressBook(int loggedUserId) {
 
         if (stoi(field) != loggedUserId) {
             tempFile << line << endl;
-            //lastContactId = stoi(field);
         }
 
     }
@@ -122,67 +120,6 @@ void deleteLineFromAddressBook(int loggedUserId) {
 
     handleFileSwap(oldFileName, tempFileName);
 
-
-
-
-    /*vector <string> linesForDeletion;
-    string line;
-    ifstream file("Ksiazka adresowa.txt", ios::in);
-
-    if (!file.is_open()) {
-        cout << "Nie mozna otworzyc pliku." << endl;
-        return;
-    }
-
-    while (getline(file, line)) {
-        string word;
-        istringstream iss(line);
-        int userIdFromTheFile;
-        int numberOfVerticalSeparators = 0;
-
-        while (getline(iss, word, '|')) {
-            numberOfVerticalSeparators++;
-
-            if (numberOfVerticalSeparators == 2) {
-                userIdFromTheFile = stoi(word);
-
-                if (loggedUserId == userIdFromTheFile) {
-                    linesForDeletion.push_back(line);
-                    break;
-                }
-            }
-        }
-    }
-
-    file.close();
-
-    ofstream newFile("Adresaci_tymczasowy.txt");
-
-    file.open("Ksiazka adresowa.txt",ios::in);
-
-    if (!file.is_open() || !newFile.is_open()) {
-        cout << "Nie mozna otworzyc obydwu plikow." << endl;
-        return;
-    }
-
-    while (getline(file, line)) {
-        if (find(linesForDeletion.begin(), linesForDeletion.end(), line) == linesForDeletion.end()) {
-            newFile << line << endl;
-        }
-    }
-
-    newFile.close();
-    file.close();
-
-    if (remove("Ksiazka adresowa.txt") != 0) {
-        cout<< "Nie mozna usunac pliku" << endl;
-        return;
-    }
-
-    if (rename("Adresaci_tymczasowy.txt", "Ksiazka adresowa.txt") != 0) {
-        cout << "Nie mozna zamienic pliku." << endl;
-        return;
-    }*/
 }
 
 void writePersonToFile(const Person &person, ofstream &file) {
