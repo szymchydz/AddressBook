@@ -83,7 +83,7 @@ bool shouldRemovePerson(const Person &person, int idToRemove, int loggedUserId) 
     return person.id == idToRemove && person.userId == loggedUserId;
 }
 
-void deleteLineFromAddressBook(int loggedUserId) { //fukcja usuwa wszytskich adresatów wybranego usera - do poprawy)
+void deleteLineFromAddressBook(int loggedUserId) {
     vector <string> linesForDeletion;
     string line;
     ifstream file("Ksiazka adresowa.txt", ios::in);
@@ -468,7 +468,7 @@ void userPasswordChange(vector<User>& currentUser, int loggedUserId) {
     }
 }
 
-void searchPersonByName(vector<Person> &postalAddress, int loggedUserId) {
+void searchPersonByName(vector<Person> &postalAddress/*, int loggedUserId*/) {
 
     if (postalAddress.empty()) {
         cout << "Ksiazka adresowa jest pusta." << endl;
@@ -485,7 +485,7 @@ void searchPersonByName(vector<Person> &postalAddress, int loggedUserId) {
 
     system("cls");
     for (const Person &person : postalAddress) {
-        if (person.name == nameToSearch && person.userId == loggedUserId) {
+        if (person.name == nameToSearch /*&& person.userId == loggedUserId*/) {
             displaySingleContactDetails(person);
             found = true;
         }
@@ -545,36 +545,36 @@ void removePersonFromAddressBook(vector<Person> &postalAddress, int loggedUserId
 
     while (it != postalAddress.end()) {
         while (it != postalAddress.end()) {
-        if (shouldRemovePerson(*it, idOfPersonToRemove, loggedUserId)) {
-            found = true;
+            if (shouldRemovePerson(*it, idOfPersonToRemove, loggedUserId)) {
+                found = true;
 
-            cout << "Usuwasz Osobe:" << endl;
-            displaySingleContactDetails(*it);
-            cout << endl << "Czy chcesz usunac tego adresata? t/n: ";
-            choice = getSymbol();
+                cout << "Usuwasz Osobe:" << endl;
+                displaySingleContactDetails(*it);
+                cout << endl << "Czy chcesz usunac tego adresata? t/n: ";
+                choice = getSymbol();
 
-            if (choice == 't') {
-                it = postalAddress.erase(it);
-                cout << "Adresata usunieto" << endl;
-                Sleep(1500);
-                deleteLineFromAddressBook(loggedUserId);
-                rewriteVectorToFile(postalAddress);
+                if (choice == 't') {
+                    it = postalAddress.erase(it);
+                    cout << "Adresata usunieto" << endl;
+                    Sleep(1500);
+                    deleteLineFromAddressBook(loggedUserId);
+                    rewriteVectorToFile(postalAddress);
 
+                } else {
+                    cout << "Bledne potwierdzenie. Nie usunieto adresata" << endl;
+                    system("pause");
+                    return;
+                }
             } else {
-                cout << "Bledne potwierdzenie. Nie usunieto adresata" << endl;
-                system("pause");
-                return;
+                ++it;
             }
-        } else {
-            ++it;
+        }
+
+        if (!found) {
+            cout << "Brak adresata o tym ID w ksiazce adresowej" << endl;
+            system("pause");
         }
     }
-
-    if (!found) {
-        cout << "Brak adresata o tym ID w ksiazce adresowej" << endl;
-        system("pause");
-    }
-}
 }
 
 void editPersonDataInAddressBook (vector <Person> &postalAddress, int loggedUserId) {
@@ -735,7 +735,7 @@ int main() {
                     addNewPersonToAddressBook(postalAddress, loggedUserId, lastPersonId);
                     break;
                 case '2':
-                    searchPersonByName(postalAddress, loggedUserId);
+                    searchPersonByName(postalAddress/*, loggedUserId*/);
                     break;
                 case '3':
                     searchPersonBySurname(postalAddress, loggedUserId);
