@@ -291,7 +291,7 @@ void rewriteVectorToFile(vector<Person> &postalAddress) {
     ofstream file;
     string lineWithPersonData;
 
-    file.open("Ksiazka adresowa.txt", ios::out | ios::app);
+    file.open("Ksiazka adresowa.txt", ios::out | ios::trunc);
     if (file.good() == true) {
         for (Person &person : postalAddress) {
             writePersonToFile(person, file);
@@ -642,13 +642,14 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress, int loggedUser
             }
         }
     }
+
     if(!found) {
         cout << "Brak adresata o tym ID w ksiazce adresowej" << endl;
         system("pause");
+        return;
     }
 
     rewriteVectorToFile(postalAddress);
-
 }
 
 char chooseOptionFromMainMenu() {
