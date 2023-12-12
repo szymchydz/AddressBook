@@ -690,7 +690,7 @@ int main() {
                 break;
             case '9':
                 exit(0);
-            default:
+            default"
                 cout << endl << "Nie ma takiej opcji w menu" << endl;
                 system("pause");
                 break;
