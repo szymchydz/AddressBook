@@ -672,7 +672,6 @@ int main() {
     int loggedUserId = 0;
 
     loadSavedUsersFromUserFile(currentUser);
-    loadSavedContactsFromAddressBook(postalAddress);
 
     char choice;
 
