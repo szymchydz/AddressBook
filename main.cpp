@@ -228,11 +228,7 @@ void loadSavedUsersFromUserFile(vector<User> &currentUser) {
     string line{};
     fstream file;
 
-    file.open("Uzytkownicy.txt", ios::in);
-
-    if (!file.is_open()) {
-        return;
-    }
+    file.open("Uzytkownicy.txt", ios::in | ios::app);
 
     User user;
 
@@ -328,7 +324,7 @@ void addNewUserToTheFile(const User &newUser) {
     file.close();
 }
 
-void addNewPersonToAddressBook(vector<Person> &postalAddress, int loggedUserId, int lastPersonId) {
+void addNewPersonToAddressBook(vector<Person> &postalAddress, int loggedUserId, int personId) {
 
     string name, surname, phoneNumber, email, address;
 
@@ -344,7 +340,7 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress, int loggedUserId, 
     address = readLine();
 
     Person newPerson;
-    newPerson.id = lastPersonId + 1;
+    newPerson.id = personId + 1;
     newPerson.userId = loggedUserId;
     newPerson.name = name;
     newPerson.surname = surname;
@@ -356,6 +352,8 @@ void addNewPersonToAddressBook(vector<Person> &postalAddress, int loggedUserId, 
 
     addNewPersonToTheFile (newPerson);
 
+    cout << endl << "Adresat zostal dodany do ksiazki adresowej." << endl;
+    system ("pause");
 }
 
 void userRegistration(vector<User> &currentUser) {
@@ -388,7 +386,6 @@ void userRegistration(vector<User> &currentUser) {
 
 int userSignIn (vector <User> &currentUser) {
     string userName, userPassword;
-
 
     ifstream file("Uzytkownicy.txt");
 
@@ -568,7 +565,6 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress, int loggedUser
 
     system("cls");
 
-
     string name, surname, phoneNumber, email, address;
 
     cout << "*****EDYCJA ADRESATA*****" << endl;
@@ -590,7 +586,6 @@ void editPersonDataInAddressBook (vector <Person> &postalAddress, int loggedUser
             cout << "6. Powrot do menu glownego" << endl;
             cout << "Twoj wybor: " << endl;
             choice = getSymbol();
-
 
             switch (choice) {
             case '1':
@@ -685,12 +680,10 @@ int main() {
                 break;
             case '2':
                 loggedUserId = userSignIn(currentUser);
-                if (loggedUserId == 0) {
-                }
                 break;
             case '9':
                 exit(0);
-            default"
+            default:
                 cout << endl << "Nie ma takiej opcji w menu" << endl;
                 system("pause");
                 break;
